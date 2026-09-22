@@ -42,6 +42,9 @@ info" and "Run anyway", or build it yourself.
 - Host names come from the Windows DNS client's event log, so they match the
   names apps actually asked for.
 - Blocking uses Windows Firewall rules through its COM API.
+- The only request Leash makes itself is one call to the GitHub API at startup
+  to see if there's a newer release. If there is, a bar with a download link
+  shows up. Nothing is downloaded or sent.
 
 ## Build
 
