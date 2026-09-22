@@ -6,6 +6,8 @@ where. Cut any of them off with one click.
 A free, open source alternative to GlassWire and NetLimiter for Windows 10 and 11.
 No driver, no account, no telemetry. One exe.
 
+![Leash showing live traffic per app](docs/screenshot.png)
+
 ## What it does
 
 - Lists every app with a network connection, grouped by executable, with live
