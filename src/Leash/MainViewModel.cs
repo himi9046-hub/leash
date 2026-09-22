@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Windows.Data;
 using System.Windows.Media;
 using Leash.Core;
@@ -26,6 +27,7 @@ public sealed class MainViewModel : Observable, IDisposable
     private PointCollection _downLine = [];
     private PointCollection _upLine = [];
     private string? _error;
+    private Release? _update;
 
     public MainViewModel()
     {
@@ -52,6 +54,7 @@ public sealed class MainViewModel : Observable, IDisposable
 
         ToggleBlock = new Command(o => Toggle((AppRow)o!), o => Elevated && o is AppRow { CanBlock: true });
         RevealSelected = new Command(_ => Reveal(), _ => Selected?.Path is not null);
+        OpenUpdate = new Command(_ => Process.Start(new ProcessStartInfo(Update!.Url) { UseShellExecute = true }), _ => Update is not null);
 
         if (Elevated)
         {
@@ -59,6 +62,7 @@ public sealed class MainViewModel : Observable, IDisposable
             _dns.Start();
         }
         _firewall.Refresh();
+        _ = CheckForUpdate();
     }
 
     public event Action<string, string>? NewApp;
@@ -69,6 +73,7 @@ public sealed class MainViewModel : Observable, IDisposable
     public ObservableCollection<ConnectionRow> Connections { get; } = [];
     public Command ToggleBlock { get; }
     public Command RevealSelected { get; }
+    public Command OpenUpdate { get; }
 
     public AppRow? Selected
     {
@@ -93,6 +98,7 @@ public sealed class MainViewModel : Observable, IDisposable
     public PointCollection DownLine { get => _downLine; private set => Set(ref _downLine, value); }
     public PointCollection UpLine { get => _upLine; private set => Set(ref _upLine, value); }
     public string? Error { get => _error; set => Set(ref _error, value); }
+    public Release? Update { get => _update; private set => Set(ref _update, value); }
 
     public void Select(string key)
     {
@@ -184,6 +190,12 @@ public sealed class MainViewModel : Observable, IDisposable
         {
             Error = $"Could not change the firewall rule: {e.Message}";
         }
+    }
+
+    private async Task CheckForUpdate()
+    {
+        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+        Update = await Updates.NewerThan(typeof(MainViewModel).Assembly.GetName().Version!, http);
     }
 
     private void Reveal()

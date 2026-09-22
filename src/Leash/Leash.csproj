@@ -9,7 +9,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>leash.ico</ApplicationIcon>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Product>Leash</Product>
   </PropertyGroup>
 
