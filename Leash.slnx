@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Leash.Core/Leash.Core.csproj" />
+    <Project Path="src/Leash/Leash.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Leash.Tests/Leash.Tests.csproj" />
+  </Folder>
+</Solution>
