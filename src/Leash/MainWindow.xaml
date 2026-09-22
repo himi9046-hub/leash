@@ -46,22 +46,39 @@
             </Border>
         </Grid>
 
-        <Border Grid.Row="1" Background="#3A2A10" BorderBrush="{StaticResource Down}" BorderThickness="0,1" Padding="20,8">
-            <Border.Style>
-                <Style TargetType="Border">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Elevated}" Value="True">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-            <DockPanel>
-                <Button DockPanel.Dock="Right" Content="Restart as administrator" Style="{StaticResource FlatButton}" Click="OnRestartElevated" BorderBrush="{StaticResource Down}" />
-                <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
-                           Text="Running without administrator rights. You can see connections, but live traffic, host names and blocking need admin." />
-            </DockPanel>
-        </Border>
+        <StackPanel Grid.Row="1">
+            <Border Background="#3A2A10" BorderBrush="{StaticResource Down}" BorderThickness="0,1" Padding="20,8">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Elevated}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="Restart as administrator" Style="{StaticResource FlatButton}" Click="OnRestartElevated" BorderBrush="{StaticResource Down}" />
+                    <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                               Text="Running without administrator rights. You can see connections, but live traffic, host names and blocking need admin." />
+                </DockPanel>
+            </Border>
+            <Border Background="#16261F" BorderBrush="{StaticResource Up}" BorderThickness="0,1" Padding="20,8">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Update}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="Download" Style="{StaticResource FlatButton}" Command="{Binding OpenUpdate}" BorderBrush="{StaticResource Up}" />
+                    <TextBlock VerticalAlignment="Center" Text="{Binding Update.Version, StringFormat='Leash {0} is out.'}" />
+                </DockPanel>
+            </Border>
+        </StackPanel>
 
         <Grid Grid.Row="2" Margin="20,12,20,0">
             <Grid.ColumnDefinitions>
