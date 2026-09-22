@@ -1,12 +1,222 @@
-﻿<Window x:Class="Leash.MainWindow"
+<Window x:Class="Leash.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Leash"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Leash" Width="1060" Height="660" MinWidth="820" MinHeight="420"
+        Background="{StaticResource Bg}" Foreground="{StaticResource Ink}"
+        FontFamily="Segoe UI" FontSize="12" Icon="pack://application:,,,/leash.ico"
+        WindowStartupLocation="CenterScreen">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
+        <Grid Margin="20,16,20,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel VerticalAlignment="Center" Margin="0,0,40,0">
+                <TextBlock Text="leash" FontSize="18" FontWeight="SemiBold" />
+                <TextBlock Text="what your apps send" Style="{StaticResource Label}" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <StackPanel Margin="0,0,28,0">
+                    <TextBlock Text="DOWN" Style="{StaticResource Label}" />
+                    <TextBlock Text="{Binding Down}" FontFamily="{StaticResource Mono}" FontSize="20" Foreground="{StaticResource Down}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="UP" Style="{StaticResource Label}" />
+                    <TextBlock Text="{Binding Up}" FontFamily="{StaticResource Mono}" FontSize="20" Foreground="{StaticResource Up}" />
+                </StackPanel>
+            </StackPanel>
+
+            <Border Grid.Column="3" Width="220" Height="34" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1" VerticalAlignment="Bottom">
+                <Canvas ClipToBounds="True">
+                    <Polyline Points="{Binding DownLine}" Stroke="{StaticResource Down}" StrokeThickness="1.5" />
+                    <Polyline Points="{Binding UpLine}" Stroke="{StaticResource Up}" StrokeThickness="1.5" />
+                </Canvas>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="1" Background="#3A2A10" BorderBrush="{StaticResource Down}" BorderThickness="0,1" Padding="20,8">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Elevated}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="Restart as administrator" Style="{StaticResource FlatButton}" Click="OnRestartElevated" BorderBrush="{StaticResource Down}" />
+                <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                           Text="Running without administrator rights. You can see connections, but live traffic, host names and blocking need admin." />
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Row="2" Margin="20,12,20,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="340" />
+            </Grid.ColumnDefinitions>
+
+            <DockPanel>
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+                    <TextBox x:Name="Search" Style="{StaticResource Search}" Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="Filter by name or folder" Margin="10,0" IsHitTestVisible="False" FontSize="12">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource Label}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=Search}" Value="">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <Grid DockPanel.Dock="Top" Margin="10,0,10,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="72" />
+                        <ColumnDefinition Width="86" />
+                        <ColumnDefinition Width="86" />
+                        <ColumnDefinition Width="74" />
+                        <ColumnDefinition Width="44" />
+                        <ColumnDefinition Width="80" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="APP" Style="{StaticResource Label}" />
+                    <TextBlock Grid.Column="1" Text="LAST MIN" Style="{StaticResource Label}" HorizontalAlignment="Center" />
+                    <TextBlock Grid.Column="2" Text="DOWN" Style="{StaticResource Label}" HorizontalAlignment="Right" />
+                    <TextBlock Grid.Column="3" Text="UP" Style="{StaticResource Label}" HorizontalAlignment="Right" />
+                    <TextBlock Grid.Column="4" Text="TOTAL" Style="{StaticResource Label}" HorizontalAlignment="Right" />
+                    <TextBlock Grid.Column="5" Text="CONN" Style="{StaticResource Label}" HorizontalAlignment="Right" />
+                </Grid>
+
+                <ListBox ItemsSource="{Binding Apps}" SelectedItem="{Binding Selected}" Background="Transparent" BorderThickness="0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Foreground" Value="{StaticResource Ink}" />
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border x:Name="Row" Padding="10,6" Background="Transparent" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
+                                            <ContentPresenter />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Row" Property="Background" Value="{StaticResource Hover}" />
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="Row" Property="Background" Value="{StaticResource Selected}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:AppRow}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="72" />
+                                    <ColumnDefinition Width="86" />
+                                    <ColumnDefinition Width="86" />
+                                    <ColumnDefinition Width="74" />
+                                    <ColumnDefinition Width="44" />
+                                    <ColumnDefinition Width="80" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal">
+                                    <Grid Width="22" Height="22" Margin="0,0,10,0">
+                                        <Border Background="{StaticResource Line}" CornerRadius="4" />
+                                        <Image Source="{Binding Icon}" Width="20" Height="20" />
+                                    </Grid>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding Where}" Style="{StaticResource Label}" TextTrimming="CharacterEllipsis" MaxWidth="320" />
+                                    </StackPanel>
+                                </StackPanel>
+                                <Canvas Grid.Column="1" Width="64" Height="18" ClipToBounds="True">
+                                    <Polyline Points="{Binding Spark}" Stroke="{StaticResource Dim}" StrokeThickness="1" />
+                                </Canvas>
+                                <TextBlock Grid.Column="2" Text="{Binding Down}" Style="{StaticResource Num}" Foreground="{StaticResource Down}" />
+                                <TextBlock Grid.Column="3" Text="{Binding Up}" Style="{StaticResource Num}" Foreground="{StaticResource Up}" />
+                                <TextBlock Grid.Column="4" Text="{Binding Total}" Style="{StaticResource Num}" />
+                                <TextBlock Grid.Column="5" Text="{Binding Connections}" Style="{StaticResource Num}" Foreground="{StaticResource Dim}" />
+                                <Button Grid.Column="6" HorizontalAlignment="Right" Style="{StaticResource BlockButton}"
+                                        Command="{Binding DataContext.ToggleBlock, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                        CommandParameter="{Binding}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+
+            <Border Grid.Column="2" Background="{StaticResource Panel}" CornerRadius="4" Padding="16,14">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top">
+                        <TextBlock Text="{Binding Selected.Name, FallbackValue='Pick an app'}" FontSize="16" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding Selected.Path, FallbackValue='Its connections show up here.'}" Style="{StaticResource Label}"
+                                   TextWrapping="Wrap" Margin="0,2,0,10" />
+                        <Button Content="Show in folder" HorizontalAlignment="Left" Style="{StaticResource FlatButton}" Command="{Binding RevealSelected}" Margin="0,0,0,14" />
+                        <Grid Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="38" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="48" />
+                                <ColumnDefinition Width="70" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="PROTO" Style="{StaticResource Label}" />
+                            <TextBlock Grid.Column="1" Text="REMOTE" Style="{StaticResource Label}" />
+                            <TextBlock Grid.Column="2" Text="PORT" Style="{StaticResource Label}" HorizontalAlignment="Right" />
+                            <TextBlock Grid.Column="3" Text="STATE" Style="{StaticResource Label}" HorizontalAlignment="Right" />
+                        </Grid>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding Connections}">
+                        <ItemsControl.Template>
+                            <ControlTemplate>
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:ConnectionRow}">
+                                <Grid Margin="0,3" ToolTip="{Binding Local, StringFormat='local port {0}'}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="38" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="48" />
+                                        <ColumnDefinition Width="70" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Protocol}" Style="{StaticResource Num}" HorizontalAlignment="Left" Foreground="{StaticResource Dim}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Host}" Style="{StaticResource Num}" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Port}" Style="{StaticResource Num}" />
+                                    <TextBlock Grid.Column="3" Text="{Binding State}" Style="{StaticResource Num}" Foreground="{StaticResource Dim}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <TextBlock Grid.Row="3" Margin="20,8,20,12" Text="{Binding Error}" Foreground="{StaticResource Block}" TextWrapping="Wrap" />
     </Grid>
 </Window>
