@@ -19,7 +19,7 @@ public sealed class TrafficMonitor : IDisposable
 
     public bool Running => _session is not null;
 
-    public static bool CanRun => TraceEventSession.IsElevated() == true;
+    public static bool CanRun => TraceEventSession.IsElevated() is true;
 
     public void Start()
     {
