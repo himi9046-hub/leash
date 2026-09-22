@@ -65,6 +65,14 @@ dotnet publish src/Leash -c Release -r win-x64 --self-contained true -p:PublishS
 - Apps inside `svchost.exe` share one row. Blocking svchost would cut off a lot
   of Windows, so think before you press it.
 - Blocking relies on Windows Firewall being on.
+## Removing Leash
+
+Block rules stay in Windows Firewall after you delete the exe. To remove all of
+them, run this in an admin PowerShell:
+
+```
+Remove-NetFirewallRule -Group Leash
+```
 
 ## License
 
