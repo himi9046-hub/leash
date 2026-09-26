@@ -1,7 +1,8 @@
 # Leash
 
 See which programs on your PC talk to the internet, how much they send, and
-where. Cut any of them off with one click.
+where. Cut any of them off with one click. I wanted this without paying for
+GlassWire, so I wrote it.
 
 A free, open source alternative to GlassWire and NetLimiter for Windows 10 and 11.
 No driver, no account, no telemetry. One exe.
@@ -28,6 +29,9 @@ Nothing to install; it's a single self-contained file.
 Leash starts without admin rights and shows connections right away. Live
 traffic, host names and blocking need administrator rights, and there's a button
 in the window to restart elevated.
+
+Start it with `--tray` to go straight to the tray, handy for a shortcut in the
+Startup folder.
 
 Windows SmartScreen may warn about an unsigned exe the first time. Click "More
 info" and "Run anyway", or build it yourself.
